@@ -14,10 +14,10 @@ const Login: React.FC<{}> = ({}) => {
     <Wrapper variant="small" >
       <Formik 
         initialValues={{ username: '', password: '' }}
-        onSubmit={async (values, {setErrors}) => {
+        onSubmit={async (values, { setErrors }) => {
           const response = await login({ options: values });
           if (response.data?.login.errors) {
-            [{field: 'username', message: 'something wrong'}]
+            // [{field: 'username', message: 'something wrong'}]
             setErrors(toErrorMap(response.data.login.errors));
           } else if (response.data?.login.user) {
             router.push('/');
@@ -56,4 +56,4 @@ const Login: React.FC<{}> = ({}) => {
   )
 };
 
-export default Register;
+export default Login;
