@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "gen": "graphql-codegen --config codegen.yml"
+    "gen": "graphql-codegen --config codegen.yml",
+    "lint": "eslint --ext .ts,.tsx"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged && npm run lint"
+    }
   },
   "dependencies": {
     "@chakra-ui/core": "^0.5.2",
@@ -31,6 +37,15 @@
     "@graphql-codegen/typescript-operations": "1.17.8",
     "@graphql-codegen/typescript-urql": "^2.0.1",
     "@types/node": "^14.6.2",
+    "@typescript-eslint/eslint-plugin": "^4.4.1",
+    "@typescript-eslint/parser": "^4.4.1",
+    "eslint": "^7.11.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.21.4",
+    "husky": "^4.3.0",
+    "prettier": "^2.1.2",
+    "pretty-quick": "^3.1.0",
     "typescript": "^4.0.2"
   }
 }
