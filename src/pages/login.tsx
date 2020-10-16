@@ -1,21 +1,21 @@
-import React from 'react';
-import { Formik, Form } from 'formik';
-import { Box, Button, Link, Flex } from '@chakra-ui/core';
-import { Wrapper } from '../components/Wrapper';
-import { InputField } from '../components/InputField';
-import { useLoginMutation } from '../generated/graphql';
-import { toErrorMap } from '../utils/toErrorMap';
-import { useRouter } from 'next/router';
-import { createUrqlClient } from '../utils/createUrqlClient';
-import { withUrqlClient } from 'next-urql';
-import NextLink from "next/link";
+import { Box, Button, Flex, Link } from '@chakra-ui/core';
+import { Form, Formik } from 'formik';
 
-const Login: React.FC<{}> = ({}) => {
+import { InputField } from '../components/InputField';
+import NextLink from 'next/link';
+import { Wrapper } from '../components/Wrapper';
+import { createUrqlClient } from '../utils/createUrqlClient';
+import { toErrorMap } from '../utils/toErrorMap';
+import { useLoginMutation } from '../generated/graphql';
+import { useRouter } from 'next/router';
+import { withUrqlClient } from 'next-urql';
+
+const Login = () => {
   const router = useRouter();
   const [, login] = useLoginMutation();
   return (
-    <Wrapper variant="small" >
-      <Formik 
+    <Wrapper variant="small">
+      <Formik
         initialValues={{ usernameOrEmail: '', password: '' }}
         onSubmit={async (values, { setErrors }) => {
           const response = await login(values);
@@ -23,7 +23,11 @@ const Login: React.FC<{}> = ({}) => {
             // [{field: 'username', message: 'something wrong'}]
             setErrors(toErrorMap(response.data.login.errors));
           } else if (response.data?.login.user) {
-            router.push('/');
+            if (typeof router.query.next === 'string') {
+              router.push(router.query.next);
+            } else {
+              router.push('/');
+            }
           }
         }}
       >
@@ -34,9 +38,7 @@ const Login: React.FC<{}> = ({}) => {
               placeholder="username or email"
               label="usernameOrEmail"
             />
-            <Box
-              mt={4}
-            >
+            <Box mt={4}>
               <InputField
                 name="password"
                 placeholder="password"
@@ -55,13 +57,13 @@ const Login: React.FC<{}> = ({}) => {
               variantColor="teal"
               isLoading={isSubmitting}
             >
-                login
+              login
             </Button>
           </Form>
         )}
       </Formik>
     </Wrapper>
-  )
+  );
 };
 
 export default withUrqlClient(createUrqlClient)(Login);
