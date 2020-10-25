@@ -16,29 +16,37 @@ export function UpdootSection({ post }: UpdootSectionProps) {
       <IconButton
         aria-label="updoot post"
         icon="chevron-up"
-        onClick={() => {
+        isLoading={loadingState === 'updoot-loading'}
+        variantColor={post.voteStatus === 1 ? 'green' : undefined}
+        onClick={async () => {
+          if (post.voteStatus === 1) {
+            return;
+          }
           setLoadingState('updoot-loading');
-          vote({
+          await vote({
             postId: post.id,
             value: 1,
           });
           setLoadingState('not-loading');
         }}
-        isLoading={loadingState === 'updoot-loading'}
       />
       {post.points}
       <IconButton
         aria-label="downdoot post"
         icon="chevron-down"
-        onClick={() => {
+        isLoading={loadingState === 'downdoot-loading'}
+        variantColor={post.voteStatus === -1 ? 'red' : undefined}
+        onClick={async () => {
+          if (post.voteStatus === -1) {
+            return;
+          }
           setLoadingState('downdoot-loading');
-          vote({
+          await vote({
             postId: post.id,
             value: -1,
           });
           setLoadingState('not-loading');
         }}
-        isLoading={loadingState === 'downdoot-loading'}
       />
     </Flex>
   );
