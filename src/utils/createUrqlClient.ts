@@ -121,10 +121,7 @@ export const cursorPagination = (): Resolver => {
   };
 };
 
-export const createUrqlClient = (
-  ssrExChange: any,
-  ctx: { req: { headers: { cookie: string } } }
-) => {
+export const createUrqlClient = (ssrExChange: any, ctx: any) => {
   let cookie = '';
   if (isServer()) {
     cookie = ctx.req.headers.cookie;
