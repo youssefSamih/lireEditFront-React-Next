@@ -6,11 +6,13 @@ import {
   stringifyVariables,
 } from 'urql';
 import {
+  DeletePostMutationVariables,
   LoginMutation,
   LogoutMutation,
   MeDocument,
   MeQuery,
   RegisterMutation,
+  UpdatePostMutationVariables,
   VoteMutationVariables,
 } from '../generated/graphql';
 import { Resolver, cacheExchange } from '@urql/exchange-graphcache';
@@ -19,6 +21,7 @@ import { pipe, tap } from 'wonka';
 import Router from 'next/router';
 import { betterUpdateQuery } from './betterUpdateQuery';
 import { isServer } from './isServer';
+import Id from '../pages/post/[id]';
 
 const errorExchange: Exchange = ({ forward }) => (ops$) => {
   return pipe(
@@ -124,7 +127,7 @@ export const cursorPagination = (): Resolver => {
 export const createUrqlClient = (ssrExChange: any, ctx: any) => {
   let cookie = '';
   if (isServer()) {
-    cookie = ctx.req.headers.cookie;
+    cookie = ctx?.req?.headers.cookie;
   }
   return {
     url: 'http://localhost:4000/graphql',
@@ -149,6 +152,21 @@ export const createUrqlClient = (ssrExChange: any, ctx: any) => {
         },
         updates: {
           Mutation: {
+            updatePost: (_result, args, cache, info) => {
+              const allFields = cache.inspectFields('Query');
+              const fieldInfos = allFields.filter(
+                (info) => info.fieldName === 'posts'
+              );
+              fieldInfos.forEach((fi) => {
+                cache.invalidate('Query', 'posts', fi.arguments || {});
+              });
+            },
+            deletePost: (_result, args, cache, info) => {
+              cache.invalidate({
+                __typename: 'Post',
+                id: (args as DeletePostMutationVariables).id,
+              });
+            },
             vote: (_result, args, cache, info) => {
               const { postId, value } = args as VoteMutationVariables;
               const data = cache.readFragment(
